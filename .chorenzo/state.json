@@ -1,5 +1,9 @@
 {
-  "projects": {},
+  "projects": {
+    "": {
+      "strict-typescript-config.applied": true
+    }
+  },
   "workspace": {
     "code-formatting-sort-imports.applied": true,
     "code-formatting.applied": true,
