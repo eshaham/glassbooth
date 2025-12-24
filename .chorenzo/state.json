@@ -1,7 +1,8 @@
 {
   "projects": {
     "": {
-      "strict-typescript-config.applied": true
+      "strict-typescript-config.applied": true,
+      "typescript-path-alias.applied": true
     }
   },
   "workspace": {
