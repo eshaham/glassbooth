@@ -1,6 +1,7 @@
 {
   "projects": {},
   "workspace": {
+    "code-formatting-sort-imports.applied": true,
     "code-formatting.applied": true,
     "code-formatting.variant": "prettier"
   }
