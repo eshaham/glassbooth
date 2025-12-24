@@ -1,11 +1,15 @@
-import type { Metadata } from "next";
-import { ColorSchemeScript, MantineProvider, mantineHtmlProps } from "@mantine/core";
-import "@mantine/core/styles.css";
-import "./globals.css";
+import type { Metadata } from 'next';
+import {
+  ColorSchemeScript,
+  MantineProvider,
+  mantineHtmlProps,
+} from '@mantine/core';
+import '@mantine/core/styles.css';
+import './globals.css';
 
 export const metadata: Metadata = {
-  title: "Spyke",
-  description: "Make calls online",
+  title: 'Spyke',
+  description: 'Make calls online',
 };
 
 export default function RootLayout({

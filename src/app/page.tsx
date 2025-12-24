@@ -1,4 +1,4 @@
-import { Container, Title, Text } from "@mantine/core";
+import { Container, Title, Text } from '@mantine/core';
 
 export default function Home() {
   return (

@@ -1,0 +1,31 @@
+{
+  "isMonorepo": false,
+  "hasWorkspacePackageManager": false,
+  "workspaceEcosystem": "javascript",
+  "workspaceDependencies": [
+    "@mantine/core",
+    "@mantine/hooks",
+    "next",
+    "react",
+    "react-dom"
+  ],
+  "ciCd": "none",
+  "projects": [
+    {
+      "path": ".",
+      "language": "typescript",
+      "type": "web_app",
+      "framework": "nextjs",
+      "dockerized": false,
+      "dependencies": [
+        "@mantine/core",
+        "@mantine/hooks",
+        "next",
+        "react",
+        "react-dom"
+      ],
+      "hasPackageManager": true,
+      "ecosystem": "javascript"
+    }
+  ]
+}
