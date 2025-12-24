@@ -4,6 +4,8 @@
     "code-formatting-sort-imports.applied": true,
     "code-formatting.applied": true,
     "code-formatting.variant": "prettier",
-    "code-linting.applied": true
+    "code-linting.applied": true,
+    "pre-commit-checks.applied": true,
+    "pre-commit-checks.hooks_configured": true
   }
 }
