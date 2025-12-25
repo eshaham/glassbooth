@@ -5,13 +5,24 @@ import { useState } from 'react';
 
 import { useTwilioDevice } from '@/hooks/useTwilioDevice';
 
+import { Dialer } from './Dialer';
+
 export function CallInterface() {
   const [phoneNumber, setPhoneNumber] = useState('');
-  const { callStatus, isReady, error, makeCall, hangUp } = useTwilioDevice();
+  const { callStatus, isReady, error, makeCall, hangUp, sendDigit } =
+    useTwilioDevice();
 
   const handleCall = () => {
     if (phoneNumber) {
       makeCall(phoneNumber);
+    }
+  };
+
+  const handleDigit = (digit: string) => {
+    if (callStatus === 'connected') {
+      sendDigit(digit);
+    } else {
+      setPhoneNumber((prev) => prev + digit);
     }
   };
 
@@ -32,6 +43,8 @@ export function CallInterface() {
         onChange={(e) => setPhoneNumber(e.target.value)}
         disabled={isInCall}
       />
+
+      <Dialer onDigit={handleDigit} />
 
       <Group>
         {!isInCall ? (

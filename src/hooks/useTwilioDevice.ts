@@ -70,5 +70,12 @@ export function useTwilioDevice() {
     setCallStatus('idle');
   }, [activeCall]);
 
-  return { callStatus, isReady, error, makeCall, hangUp };
+  const sendDigit = useCallback(
+    (digit: string) => {
+      activeCall?.sendDigits(digit);
+    },
+    [activeCall],
+  );
+
+  return { callStatus, isReady, error, makeCall, hangUp, sendDigit };
 }
