@@ -32,7 +32,8 @@ export default function LoginPage() {
       router.push('/');
       router.refresh();
     } else {
-      setError('Invalid password');
+      const data = await response.json();
+      setError(data.error || 'Invalid password');
       setLoading(false);
     }
   };
