@@ -7,6 +7,25 @@ import { useTwilioDevice } from '@/hooks/useTwilioDevice';
 
 import { Dialer } from './Dialer';
 
+function BackspaceIcon() {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M21 4H8l-7 8 7 8h13a2 2 0 002-2V6a2 2 0 00-2-2z" />
+      <line x1="18" y1="9" x2="12" y2="15" />
+      <line x1="12" y1="9" x2="18" y2="15" />
+    </svg>
+  );
+}
+
 function PhoneIcon() {
   return (
     <svg
@@ -49,7 +68,7 @@ export function CallInterface() {
 
   const handleCall = () => {
     if (phoneNumber) {
-      makeCall(phoneNumber);
+      makeCall('+' + phoneNumber);
     }
   };
 
@@ -62,9 +81,15 @@ export function CallInterface() {
   };
 
   const handleBackspace = () => {
-    if (!isInCall) {
+    if (!isInCall && phoneNumber.length > 0) {
       setPhoneNumber((prev) => prev.slice(0, -1));
     }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (isInCall) return;
+    const value = e.target.value.replace(/[^0-9]/g, '');
+    setPhoneNumber(value);
   };
 
   const isInCall = callStatus === 'connecting' || callStatus === 'connected';
@@ -85,6 +110,8 @@ export function CallInterface() {
     }
   };
 
+  const displayNumber = phoneNumber ? '+' + phoneNumber : '';
+
   return (
     <div className="glass-card" style={{ padding: '32px 24px' }}>
       {error && (
@@ -98,27 +125,27 @@ export function CallInterface() {
       )}
 
       <div
-        onClick={handleBackspace}
         style={{
           minHeight: '60px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           marginBottom: '24px',
-          cursor: phoneNumber && !isInCall ? 'pointer' : 'default',
+          position: 'relative',
         }}
       >
         <input
-          type="text"
-          value={phoneNumber}
-          onChange={(e) => !isInCall && setPhoneNumber(e.target.value)}
+          type="tel"
+          inputMode="tel"
+          value={displayNumber}
+          onChange={handleInputChange}
           placeholder="+1234567890"
           disabled={isInCall}
           style={{
             background: 'transparent',
             border: 'none',
             outline: 'none',
-            fontSize: '2rem',
+            fontSize: 'clamp(1.5rem, 5vw, 2rem)',
             fontWeight: 300,
             color: 'var(--text-primary)',
             textAlign: 'center',
@@ -126,6 +153,28 @@ export function CallInterface() {
             letterSpacing: '0.05em',
           }}
         />
+        {phoneNumber.length > 0 && !isInCall && (
+          <button
+            onClick={handleBackspace}
+            style={{
+              position: 'absolute',
+              right: '0',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              background: 'none',
+              border: 'none',
+              color: 'var(--text-secondary)',
+              cursor: 'pointer',
+              padding: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'color 0.2s ease',
+            }}
+          >
+            <BackspaceIcon />
+          </button>
+        )}
       </div>
 
       <Dialer onDigit={handleDigit} />

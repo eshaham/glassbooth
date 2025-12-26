@@ -11,9 +11,12 @@ export function Dialer({ onDigit }: DialerProps) {
     <div
       style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(3, 64px)',
-        gap: '16px',
+        gridTemplateColumns: 'repeat(3, minmax(56px, 64px))',
+        gap: 'clamp(8px, 3vw, 16px)',
         justifyContent: 'center',
+        width: '100%',
+        maxWidth: '256px',
+        margin: '0 auto',
       }}
     >
       {KEYS.map((key) => (
@@ -22,8 +25,8 @@ export function Dialer({ onDigit }: DialerProps) {
           className="glass-button"
           onClick={() => onDigit(key)}
           style={{
-            width: '64px',
-            height: '64px',
+            aspectRatio: '1',
+            width: '100%',
             borderRadius: '50%',
             fontSize: '1.5rem',
             fontWeight: 400,
