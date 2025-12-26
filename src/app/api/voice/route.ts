@@ -1,11 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
-import twilio from 'twilio';
+import twilio, { validateRequest } from 'twilio';
 
 const callerNumber = process.env.TWILIO_PHONE_NUMBER!;
+const authToken = process.env.TWILIO_AUTH_TOKEN!;
 
 export async function POST(request: NextRequest) {
+  const signature = request.headers.get('x-twilio-signature') || '';
+  const url = request.url;
   const formData = await request.formData();
-  const to = formData.get('To') as string;
+  const params: Record<string, string> = {};
+  formData.forEach((value, key) => {
+    params[key] = value.toString();
+  });
+
+  const isValid = validateRequest(authToken, signature, url, params);
+  if (!isValid) {
+    return new NextResponse('Forbidden', { status: 403 });
+  }
+
+  const to = params['To'];
 
   const twiml = new twilio.twiml.VoiceResponse();
 

@@ -7,8 +7,9 @@ export function middleware(request: NextRequest) {
     request.cookies.get(COOKIE_NAME)?.value === 'authenticated';
   const isLoginPage = request.nextUrl.pathname === '/login';
   const isAuthApi = request.nextUrl.pathname === '/api/auth';
+  const isTwilioWebhook = request.nextUrl.pathname.startsWith('/api/voice');
 
-  if (isAuthApi) {
+  if (isAuthApi || isTwilioWebhook) {
     return NextResponse.next();
   }
 
