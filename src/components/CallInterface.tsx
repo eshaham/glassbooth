@@ -13,8 +13,15 @@ export function CallInterface() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [selectedCountry, setSelectedCountry] =
     useState<Country>(defaultCountry);
-  const { callStatus, isReady, error, makeCall, hangUp, sendDigit } =
-    useTwilioDevice();
+  const {
+    callStatus,
+    deviceStatus,
+    isReady,
+    error,
+    makeCall,
+    hangUp,
+    sendDigit,
+  } = useTwilioDevice();
 
   const handleCall = () => {
     if (phoneNumber) {
@@ -45,12 +52,15 @@ export function CallInterface() {
   const isInCall = callStatus === 'connecting' || callStatus === 'connected';
 
   const getStatusText = () => {
+    if (deviceStatus === 'disconnected') return 'Reconnecting...';
+    if (deviceStatus === 'connecting') return 'Connecting...';
+    if (deviceStatus === 'error') return 'Connection failed';
     if (!isReady) return 'Initializing...';
     switch (callStatus) {
       case 'idle':
         return 'Ready for call';
       case 'connecting':
-        return 'Connecting...';
+        return 'Calling...';
       case 'connected':
         return 'Call in progress';
       case 'disconnected':
@@ -125,15 +135,19 @@ export function CallInterface() {
             component="button"
             className="call-button"
             onClick={handleCall}
-            disabled={!isReady || !phoneNumber}
+            disabled={!isReady || !phoneNumber || deviceStatus !== 'ready'}
             w={64}
             h={64}
             align="center"
             justify="center"
             style={{
               borderRadius: '50%',
-              cursor: isReady && phoneNumber ? 'pointer' : 'not-allowed',
-              opacity: isReady && phoneNumber ? 1 : 0.5,
+              cursor:
+                isReady && phoneNumber && deviceStatus === 'ready'
+                  ? 'pointer'
+                  : 'not-allowed',
+              opacity:
+                isReady && phoneNumber && deviceStatus === 'ready' ? 1 : 0.5,
             }}
           >
             <IconPhone size={28} color="white" fill="white" />
