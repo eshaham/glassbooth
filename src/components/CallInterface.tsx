@@ -3,6 +3,7 @@
 import { Alert, Box, Flex, Text } from '@mantine/core';
 import { IconBackspace, IconPhone, IconPhoneOff } from '@tabler/icons-react';
 import {
+  AsYouType,
   CountryCode,
   isValidPhoneNumber,
   validatePhoneNumberLength,
@@ -72,11 +73,19 @@ export function CallInterface() {
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (isInCall) return;
+    if (e.key === 'Backspace' || e.key === 'Delete') {
+      e.preventDefault();
+      handleBackspace();
+    }
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (isInCall) return;
-    const value = e.target.value.replace(/[^0-9]/g, '');
-    if (!isTooLong(value)) {
-      setPhoneNumber(value);
+    const newDigits = e.target.value.replace(/[^0-9]/g, '');
+    if (newDigits.length > phoneNumber.length && !isTooLong(newDigits)) {
+      setPhoneNumber(newDigits);
     }
   };
 
@@ -101,7 +110,12 @@ export function CallInterface() {
     }
   };
 
-  const displayNumber = phoneNumber || '';
+  const displayNumber = useMemo(() => {
+    if (!phoneNumber) return '';
+    return new AsYouType(selectedCountry.code as CountryCode).input(
+      phoneNumber,
+    );
+  }, [phoneNumber, selectedCountry]);
 
   return (
     <Box className="glass-card" px={24} py={32}>
@@ -127,22 +141,22 @@ export function CallInterface() {
             onChange={setSelectedCountry}
             disabled={isInCall}
           />
-          <input
+          <Box
+            component="input"
             type="tel"
             inputMode="tel"
             value={displayNumber}
             onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
             placeholder="Phone number"
             disabled={isInCall}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              outline: 'none',
-              fontSize: 'clamp(1.25rem, 4vw, 1.5rem)',
-              fontWeight: 300,
-              color: 'var(--text-primary)',
-              width: '160px',
-            }}
+            bg="transparent"
+            bd="none"
+            fz="clamp(1.25rem, 4vw, 1.5rem)"
+            fw={300}
+            c="var(--text-primary)"
+            w={180}
+            style={{ outline: 'none' }}
           />
         </Flex>
         {phoneNumber.length > 0 && !isInCall && (
