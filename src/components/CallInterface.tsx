@@ -75,7 +75,16 @@ export function CallInterface() {
   return (
     <Box className="glass-card" px={24} py={32}>
       {error && (
-        <Alert color="red" title="Error" mb="md" bg="rgba(239, 68, 68, 0.2)">
+        <Alert
+          color="red"
+          title="Error"
+          mb="md"
+          bg="rgba(239, 68, 68, 0.15)"
+          styles={{
+            title: { color: '#fca5a5' },
+            message: { color: 'white' },
+          }}
+        >
           {error}
         </Alert>
       )}
