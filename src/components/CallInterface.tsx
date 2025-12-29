@@ -6,16 +6,19 @@ import { useState } from 'react';
 
 import { useTwilioDevice } from '@/hooks/useTwilioDevice';
 
+import { Country, CountrySelector, defaultCountry } from './CountrySelector';
 import { Dialer } from './Dialer';
 
 export function CallInterface() {
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [selectedCountry, setSelectedCountry] =
+    useState<Country>(defaultCountry);
   const { callStatus, isReady, error, makeCall, hangUp, sendDigit } =
     useTwilioDevice();
 
   const handleCall = () => {
     if (phoneNumber) {
-      makeCall('+' + phoneNumber);
+      makeCall('+' + selectedCountry.dialCode + phoneNumber);
     }
   };
 
@@ -57,7 +60,7 @@ export function CallInterface() {
     }
   };
 
-  const displayNumber = phoneNumber ? '+' + phoneNumber : '';
+  const displayNumber = phoneNumber || '';
 
   return (
     <Box className="glass-card" px={24} py={32}>
@@ -68,42 +71,45 @@ export function CallInterface() {
       )}
 
       <Flex mih={60} align="center" justify="center" mb={24} pos="relative">
-        <input
-          type="tel"
-          inputMode="tel"
-          value={displayNumber}
-          onChange={handleInputChange}
-          placeholder="+1234567890"
-          disabled={isInCall}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            outline: 'none',
-            fontSize: 'clamp(1.5rem, 5vw, 2rem)',
-            fontWeight: 300,
-            color: 'var(--text-primary)',
-            textAlign: 'center',
-            width: '100%',
-            letterSpacing: '0.05em',
-          }}
-        />
+        <Flex align="center">
+          <CountrySelector
+            value={selectedCountry}
+            onChange={setSelectedCountry}
+            disabled={isInCall}
+          />
+          <input
+            type="tel"
+            inputMode="tel"
+            value={displayNumber}
+            onChange={handleInputChange}
+            placeholder="Phone number"
+            disabled={isInCall}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              outline: 'none',
+              fontSize: 'clamp(1.25rem, 4vw, 1.5rem)',
+              fontWeight: 300,
+              color: 'var(--text-primary)',
+              width: '160px',
+            }}
+          />
+        </Flex>
         {phoneNumber.length > 0 && !isInCall && (
           <Flex
             component="button"
             onClick={handleBackspace}
+            align="center"
+            justify="center"
             pos="absolute"
             right={0}
             top="50%"
-            align="center"
-            justify="center"
-            p={8}
+            bg="transparent"
+            bd="none"
+            c="var(--text-secondary)"
             style={{
               transform: 'translateY(-50%)',
-              background: 'none',
-              border: 'none',
-              color: 'var(--text-secondary)',
               cursor: 'pointer',
-              transition: 'color 0.2s ease',
             }}
           >
             <IconBackspace size={24} />
@@ -141,10 +147,7 @@ export function CallInterface() {
             h={64}
             align="center"
             justify="center"
-            style={{
-              borderRadius: '50%',
-              cursor: 'pointer',
-            }}
+            style={{ borderRadius: '50%' }}
           >
             <IconPhoneOff size={28} color="white" />
           </Flex>
