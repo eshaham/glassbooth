@@ -1,12 +1,12 @@
 'use client';
 
-import { Alert } from '@mantine/core';
+import { Alert, Box, Flex, Text } from '@mantine/core';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 function SpykeLogo() {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <Flex align="center" gap={12}>
       <svg
         width="48"
         height="48"
@@ -59,10 +59,11 @@ function SpykeLogo() {
           </linearGradient>
         </defs>
       </svg>
-      <span
+      <Text
+        component="span"
+        fz="2rem"
+        fw={700}
         style={{
-          fontSize: '2rem',
-          fontWeight: 700,
           letterSpacing: '0.1em',
           background: 'linear-gradient(135deg, #00d9ff 0%, #7c3aed 100%)',
           WebkitBackgroundClip: 'text',
@@ -71,8 +72,8 @@ function SpykeLogo() {
         }}
       >
         SPYKE
-      </span>
-    </div>
+      </Text>
+    </Flex>
   );
 }
 
@@ -136,54 +137,41 @@ export default function LoginPage() {
   };
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '40px 20px',
-        position: 'relative',
-        zIndex: 1,
-      }}
+    <Flex
+      mih="100vh"
+      direction="column"
+      align="center"
+      justify="center"
+      px={20}
+      py={40}
+      pos="relative"
+      style={{ zIndex: 1 }}
     >
       <SpykeLogo />
-      <div
-        className="glass-card"
-        style={{
-          marginTop: '40px',
-          width: '100%',
-          maxWidth: '360px',
-          padding: '32px 24px',
-        }}
-      >
+      <Box className="glass-card" mt={40} w="100%" maw={360} px={24} py={32}>
         <form onSubmit={handleSubmit}>
           {error && (
             <Alert
               color="red"
               title="Error"
-              style={{
-                marginBottom: '24px',
-                background: 'rgba(239, 68, 68, 0.2)',
-              }}
+              mb={24}
+              bg="rgba(239, 68, 68, 0.2)"
             >
               {error}
             </Alert>
           )}
 
-          <div style={{ marginBottom: '24px' }}>
-            <label
-              style={{
-                display: 'block',
-                marginBottom: '8px',
-                color: 'var(--text-secondary)',
-                fontSize: '0.875rem',
-              }}
+          <Box mb={24}>
+            <Text
+              component="label"
+              display="block"
+              mb={8}
+              c="var(--text-secondary)"
+              fz="0.875rem"
             >
               Password
-            </label>
-            <div style={{ position: 'relative' }}>
+            </Text>
+            <Box pos="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Enter password"
@@ -202,48 +190,50 @@ export default function LoginPage() {
                   boxSizing: 'border-box',
                 }}
               />
-              <button
+              <Flex
+                component="button"
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
+                pos="absolute"
+                right={12}
+                top="50%"
+                align="center"
+                justify="center"
+                p={4}
                 style={{
-                  position: 'absolute',
-                  right: '12px',
-                  top: '50%',
                   transform: 'translateY(-50%)',
                   background: 'none',
                   border: 'none',
                   color: 'var(--text-secondary)',
                   cursor: 'pointer',
-                  padding: '4px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
                 }}
               >
                 <EyeIcon visible={showPassword} />
-              </button>
-            </div>
-          </div>
+              </Flex>
+            </Box>
+          </Box>
 
-          <button
+          <Flex
+            component="button"
             type="submit"
             className="call-button"
             disabled={loading}
+            w="100%"
+            p={14}
+            fz="1rem"
+            fw={600}
+            c="white"
+            justify="center"
             style={{
-              width: '100%',
-              padding: '14px',
               borderRadius: '8px',
-              fontSize: '1rem',
-              fontWeight: 600,
               cursor: loading ? 'not-allowed' : 'pointer',
               opacity: loading ? 0.7 : 1,
-              color: 'white',
             }}
           >
             {loading ? 'Logging in...' : 'Login'}
-          </button>
+          </Flex>
         </form>
-      </div>
-    </div>
+      </Box>
+    </Flex>
   );
 }

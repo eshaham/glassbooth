@@ -1,6 +1,6 @@
 'use client';
 
-import { Alert } from '@mantine/core';
+import { Alert, Box, Flex, Text } from '@mantine/core';
 import { useState } from 'react';
 
 import { useTwilioDevice } from '@/hooks/useTwilioDevice';
@@ -113,27 +113,14 @@ export function CallInterface() {
   const displayNumber = phoneNumber ? '+' + phoneNumber : '';
 
   return (
-    <div className="glass-card" style={{ padding: '32px 24px' }}>
+    <Box className="glass-card" px={24} py={32}>
       {error && (
-        <Alert
-          color="red"
-          title="Error"
-          style={{ marginBottom: '16px', background: 'rgba(239, 68, 68, 0.2)' }}
-        >
+        <Alert color="red" title="Error" mb="md" bg="rgba(239, 68, 68, 0.2)">
           {error}
         </Alert>
       )}
 
-      <div
-        style={{
-          minHeight: '60px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginBottom: '24px',
-          position: 'relative',
-        }}
-      >
+      <Flex mih={60} align="center" justify="center" mb={24} pos="relative">
         <input
           type="tel"
           inputMode="tel"
@@ -154,85 +141,72 @@ export function CallInterface() {
           }}
         />
         {phoneNumber.length > 0 && !isInCall && (
-          <button
+          <Flex
+            component="button"
             onClick={handleBackspace}
+            pos="absolute"
+            right={0}
+            top="50%"
+            align="center"
+            justify="center"
+            p={8}
             style={{
-              position: 'absolute',
-              right: '0',
-              top: '50%',
               transform: 'translateY(-50%)',
               background: 'none',
               border: 'none',
               color: 'var(--text-secondary)',
               cursor: 'pointer',
-              padding: '8px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
               transition: 'color 0.2s ease',
             }}
           >
             <BackspaceIcon />
-          </button>
+          </Flex>
         )}
-      </div>
+      </Flex>
 
       <Dialer onDigit={handleDigit} />
 
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          marginTop: '24px',
-        }}
-      >
+      <Flex justify="center" mt={24}>
         {!isInCall ? (
-          <button
+          <Flex
+            component="button"
             className="call-button"
             onClick={handleCall}
             disabled={!isReady || !phoneNumber}
+            w={64}
+            h={64}
+            align="center"
+            justify="center"
             style={{
-              width: '64px',
-              height: '64px',
               borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
               cursor: isReady && phoneNumber ? 'pointer' : 'not-allowed',
               opacity: isReady && phoneNumber ? 1 : 0.5,
             }}
           >
             <PhoneIcon />
-          </button>
+          </Flex>
         ) : (
-          <button
+          <Flex
+            component="button"
             className="hangup-button"
             onClick={hangUp}
+            w={64}
+            h={64}
+            align="center"
+            justify="center"
             style={{
-              width: '64px',
-              height: '64px',
               borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
               cursor: 'pointer',
             }}
           >
             <HangUpIcon />
-          </button>
+          </Flex>
         )}
-      </div>
+      </Flex>
 
-      <div
-        style={{
-          textAlign: 'center',
-          marginTop: '24px',
-          color: 'var(--text-secondary)',
-          fontSize: '0.875rem',
-        }}
-      >
+      <Text ta="center" mt={24} c="var(--text-secondary)" fz="0.875rem">
         Status: {getStatusText()}
-      </div>
-    </div>
+      </Text>
+    </Box>
   );
 }

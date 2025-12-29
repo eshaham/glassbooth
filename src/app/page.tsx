@@ -1,8 +1,10 @@
+import { Box, Flex, Text } from '@mantine/core';
+
 import { CallInterface } from '@/components/CallInterface';
 
 function SpykeLogo() {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <Flex align="center" gap={12}>
       <svg
         width="48"
         height="48"
@@ -55,10 +57,11 @@ function SpykeLogo() {
           </linearGradient>
         </defs>
       </svg>
-      <span
+      <Text
+        component="span"
+        fz="2rem"
+        fw={700}
         style={{
-          fontSize: '2rem',
-          fontWeight: 700,
           letterSpacing: '0.1em',
           background: 'linear-gradient(135deg, #00d9ff 0%, #7c3aed 100%)',
           WebkitBackgroundClip: 'text',
@@ -67,28 +70,26 @@ function SpykeLogo() {
         }}
       >
         SPYKE
-      </span>
-    </div>
+      </Text>
+    </Flex>
   );
 }
 
 export default function Home() {
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        padding: '40px 20px',
-        position: 'relative',
-        zIndex: 1,
-      }}
+    <Flex
+      mih="100vh"
+      direction="column"
+      align="center"
+      px={20}
+      py={40}
+      pos="relative"
+      style={{ zIndex: 1 }}
     >
       <SpykeLogo />
-      <div style={{ marginTop: '40px', width: '100%', maxWidth: '400px' }}>
+      <Box mt={40} w="100%" maw={400}>
         <CallInterface />
-      </div>
-    </div>
+      </Box>
+    </Flex>
   );
 }
