@@ -50,12 +50,18 @@ export async function getCountryPricing(countryCode: string) {
 
   const twilioData = await response.json();
 
-  const prices = (twilioData.outbound_prefix_prices || [])
+  const relevantPrices = (twilioData.outbound_prefix_prices || [])
+    .filter((p: { friendly_name: string }) => {
+      const name = p.friendly_name.toLowerCase();
+      return name.includes('mobile') || name.includes('landline');
+    })
     .map((p: { current_price: string }) => parseFloat(p.current_price))
     .filter((p: number) => !isNaN(p) && p > 0);
 
-  const minPrice = prices.length > 0 ? Math.min(...prices) : null;
-  const maxPrice = prices.length > 0 ? Math.max(...prices) : null;
+  const minPrice =
+    relevantPrices.length > 0 ? Math.min(...relevantPrices) : null;
+  const maxPrice =
+    relevantPrices.length > 0 ? Math.max(...relevantPrices) : null;
 
   const data = {
     country: twilioData.country,
