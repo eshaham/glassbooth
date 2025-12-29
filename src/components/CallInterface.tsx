@@ -1,65 +1,12 @@
 'use client';
 
 import { Alert, Box, Flex, Text } from '@mantine/core';
+import { IconBackspace, IconPhone, IconPhoneOff } from '@tabler/icons-react';
 import { useState } from 'react';
 
 import { useTwilioDevice } from '@/hooks/useTwilioDevice';
 
 import { Dialer } from './Dialer';
-
-function BackspaceIcon() {
-  return (
-    <svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M21 4H8l-7 8 7 8h13a2 2 0 002-2V6a2 2 0 00-2-2z" />
-      <line x1="18" y1="9" x2="12" y2="15" />
-      <line x1="12" y1="9" x2="18" y2="15" />
-    </svg>
-  );
-}
-
-function PhoneIcon() {
-  return (
-    <svg
-      width="28"
-      height="28"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"
-        fill="white"
-      />
-    </svg>
-  );
-}
-
-function HangUpIcon() {
-  return (
-    <svg
-      width="28"
-      height="28"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M23 16.01l-3.48-3.48a2 2 0 00-2.83 0l-1.34 1.34a16.06 16.06 0 01-6.22-6.22l1.34-1.34a2 2 0 000-2.83L7 .01a2 2 0 00-2.83 0L1.52 2.66A4 4 0 00.71 6.5c1.29 6.37 5.93 11.01 12.3 12.3a4 4 0 003.84-.81l2.65-2.65a2 2 0 000-2.83z"
-        fill="white"
-        transform="rotate(135 12 12)"
-      />
-    </svg>
-  );
-}
 
 export function CallInterface() {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -159,7 +106,7 @@ export function CallInterface() {
               transition: 'color 0.2s ease',
             }}
           >
-            <BackspaceIcon />
+            <IconBackspace size={24} />
           </Flex>
         )}
       </Flex>
@@ -183,7 +130,7 @@ export function CallInterface() {
               opacity: isReady && phoneNumber ? 1 : 0.5,
             }}
           >
-            <PhoneIcon />
+            <IconPhone size={28} color="white" fill="white" />
           </Flex>
         ) : (
           <Flex
@@ -199,7 +146,7 @@ export function CallInterface() {
               cursor: 'pointer',
             }}
           >
-            <HangUpIcon />
+            <IconPhoneOff size={28} color="white" />
           </Flex>
         )}
       </Flex>
