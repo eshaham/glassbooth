@@ -98,9 +98,13 @@ export function useTwilioDevice() {
       });
 
       device.on('error', (err) => {
-        setError(err.message);
-        if (err.code === 31205 || err.code === 20101) {
+        const tokenErrors = [
+          20101, 20102, 20103, 20104, 20105, 20106, 20107, 31205,
+        ];
+        if (tokenErrors.includes(err.code)) {
           attemptReconnect();
+        } else {
+          setError(err.message);
         }
       });
 
