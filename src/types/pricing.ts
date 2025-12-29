@@ -1,7 +1,8 @@
 export interface CountryPricing {
   country: string;
   isoCountry: string;
-  currentPrice: string;
+  minPrice: string | null;
+  maxPrice: string | null;
   priceUnit: string;
 }
 

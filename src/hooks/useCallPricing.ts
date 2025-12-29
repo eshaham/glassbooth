@@ -131,30 +131,46 @@ export function useCallPricing({
     };
   }, [callStatus, callSid, fetchFinalCost]);
 
-  const currentRate =
-    numberPricing?.currentPrice || countryPricing?.currentPrice;
+  const currentRate = numberPricing?.currentPrice || countryPricing?.maxPrice;
   const priceUnit =
     numberPricing?.priceUnit || countryPricing?.priceUnit || 'USD';
 
   const billedMinutes = Math.ceil(callDuration / 60) || 0;
   const currentCost =
     currentRate && callDuration > 0
-      ? (billedMinutes * parseFloat(currentRate)).toFixed(4)
+      ? billedMinutes * parseFloat(currentRate)
       : null;
 
   const formatRate = (price: string | null | undefined): string | null => {
     if (!price) return null;
-    return `$${parseFloat(price).toFixed(4)}/min`;
+    return `$${parseFloat(price).toFixed(2)}/min`;
   };
 
-  const formatCost = (cost: string | null): string | null => {
-    if (!cost) return null;
-    const amount = parseFloat(cost);
-    return `$${amount.toFixed(2)}`;
+  const formatRateRange = (): string | null => {
+    if (!countryPricing?.minPrice || !countryPricing?.maxPrice) return null;
+    const min = parseFloat(countryPricing.minPrice);
+    const max = parseFloat(countryPricing.maxPrice);
+    if (min === max) {
+      return `$${min.toFixed(2)}/min`;
+    }
+    return `$${min.toFixed(2)}–$${max.toFixed(2)}/min`;
+  };
+
+  const formatCost = (cost: number | null): string | null => {
+    if (cost === null) return null;
+    const roundedUp = Math.ceil(cost * 100) / 100;
+    return `$${roundedUp.toFixed(2)}`;
+  };
+
+  const formatFinalCost = (price: string | null): string | null => {
+    if (!price) return null;
+    const amount = Math.abs(parseFloat(price));
+    const roundedUp = Math.ceil(amount * 100) / 100;
+    return `$${roundedUp.toFixed(2)}`;
   };
 
   return {
-    countryRate: formatRate(countryPricing?.currentPrice),
+    countryRate: formatRateRange(),
     countryName: countryPricing?.country || null,
     numberRate: formatRate(numberPricing?.currentPrice),
     currentCost: formatCost(currentCost),
@@ -162,7 +178,7 @@ export function useCallPricing({
     finalCost: finalCost
       ? {
           ...finalCost,
-          displayCost: formatCost(finalCost.price),
+          displayCost: formatFinalCost(finalCost.price),
         }
       : null,
     priceUnit,

@@ -52,8 +52,8 @@ export function CallCostDisplay({
 
   if (callStatus === 'disconnected' && finalCost) {
     return (
-      <Text ta="center" mt={8} c="var(--text-secondary)" fz="0.75rem">
-        Call ended • {formatDuration(finalCost.duration)} •{' '}
+      <Text ta="center" mt={12} c="var(--accent-cyan)" fz="0.875rem" fw={500}>
+        {formatDuration(finalCost.duration)} •{' '}
         {finalCost.displayCost || 'Cost pending'}
       </Text>
     );
@@ -61,7 +61,7 @@ export function CallCostDisplay({
 
   if (callStatus === 'connected') {
     return (
-      <Text ta="center" mt={8} c="var(--text-secondary)" fz="0.75rem">
+      <Text ta="center" mt={12} c="var(--accent-cyan)" fz="1rem" fw={500}>
         {formatDuration(callDuration)} • {currentCost || 'Calculating...'}
       </Text>
     );
@@ -69,7 +69,14 @@ export function CallCostDisplay({
 
   if (callStatus === 'connecting') {
     return (
-      <Text ta="center" mt={8} c="var(--text-secondary)" fz="0.75rem">
+      <Text
+        ta="center"
+        mt={8}
+        c="var(--text-secondary)"
+        fz="0.75rem"
+        fs="italic"
+        opacity={0.7}
+      >
         {numberRate || countryRate || 'Rate unavailable'}
       </Text>
     );
@@ -77,7 +84,14 @@ export function CallCostDisplay({
 
   if (numberRate) {
     return (
-      <Text ta="center" mt={8} c="var(--text-secondary)" fz="0.75rem">
+      <Text
+        ta="center"
+        mt={8}
+        c="var(--text-secondary)"
+        fz="0.75rem"
+        fs="italic"
+        opacity={0.7}
+      >
         {numberRate}
       </Text>
     );
@@ -85,8 +99,15 @@ export function CallCostDisplay({
 
   if (countryRate && countryName) {
     return (
-      <Text ta="center" mt={8} c="var(--text-secondary)" fz="0.75rem">
-        ~{countryRate} to {countryName}
+      <Text
+        ta="center"
+        mt={8}
+        c="var(--text-secondary)"
+        fz="0.7rem"
+        fs="italic"
+        opacity={0.6}
+      >
+        {countryRate} to {countryName}
       </Text>
     );
   }

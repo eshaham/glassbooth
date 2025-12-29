@@ -11,7 +11,8 @@ interface CountryPricingCache {
   data: {
     country: string;
     isoCountry: string;
-    currentPrice: string | null;
+    minPrice: string | null;
+    maxPrice: string | null;
     priceUnit: string;
   };
   expires: number;
@@ -49,17 +50,18 @@ export async function getCountryPricing(countryCode: string) {
 
   const twilioData = await response.json();
 
-  const mobilePrice = twilioData.outbound_prefix_prices?.find(
-    (p: { friendly_name: string }) =>
-      p.friendly_name.toLowerCase().includes('mobile'),
-  );
-  const fallbackPrice = twilioData.outbound_prefix_prices?.[0];
-  const priceInfo = mobilePrice || fallbackPrice;
+  const prices = (twilioData.outbound_prefix_prices || [])
+    .map((p: { current_price: string }) => parseFloat(p.current_price))
+    .filter((p: number) => !isNaN(p) && p > 0);
+
+  const minPrice = prices.length > 0 ? Math.min(...prices) : null;
+  const maxPrice = prices.length > 0 ? Math.max(...prices) : null;
 
   const data = {
     country: twilioData.country,
     isoCountry: twilioData.iso_country,
-    currentPrice: priceInfo?.current_price || null,
+    minPrice: minPrice !== null ? minPrice.toString() : null,
+    maxPrice: maxPrice !== null ? maxPrice.toString() : null,
     priceUnit: twilioData.price_unit,
   };
 
