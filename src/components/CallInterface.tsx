@@ -2,7 +2,12 @@
 
 import { Alert, Box, Flex, Text } from '@mantine/core';
 import { IconBackspace, IconPhone, IconPhoneOff } from '@tabler/icons-react';
-import { useState } from 'react';
+import {
+  CountryCode,
+  isValidPhoneNumber,
+  validatePhoneNumberLength,
+} from 'libphonenumber-js';
+import { useCallback, useMemo, useState } from 'react';
 
 import { useTwilioDevice } from '@/hooks/useTwilioDevice';
 
@@ -23,8 +28,28 @@ export function CallInterface() {
     sendDigit,
   } = useTwilioDevice();
 
+  const isValidNumber = useMemo(() => {
+    if (!phoneNumber) return false;
+    const fullNumber = '+' + selectedCountry.dialCode + phoneNumber;
+    return isValidPhoneNumber(fullNumber, selectedCountry.code as CountryCode);
+  }, [phoneNumber, selectedCountry]);
+
+  const isTooLong = useCallback(
+    (value: string) => {
+      if (!value) return false;
+      const fullNumber = '+' + selectedCountry.dialCode + value;
+      return (
+        validatePhoneNumberLength(
+          fullNumber,
+          selectedCountry.code as CountryCode,
+        ) === 'TOO_LONG'
+      );
+    },
+    [selectedCountry],
+  );
+
   const handleCall = () => {
-    if (phoneNumber) {
+    if (isValidNumber) {
       makeCall('+' + selectedCountry.dialCode + phoneNumber);
     }
   };
@@ -33,7 +58,10 @@ export function CallInterface() {
     if (callStatus === 'connected') {
       sendDigit(digit);
     } else {
-      setPhoneNumber((prev) => prev + digit);
+      const newValue = phoneNumber + digit;
+      if (!isTooLong(newValue)) {
+        setPhoneNumber(newValue);
+      }
     }
   };
 
@@ -46,7 +74,9 @@ export function CallInterface() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (isInCall) return;
     const value = e.target.value.replace(/[^0-9]/g, '');
-    setPhoneNumber(value);
+    if (!isTooLong(value)) {
+      setPhoneNumber(value);
+    }
   };
 
   const isInCall = callStatus === 'connecting' || callStatus === 'connected';
@@ -144,7 +174,7 @@ export function CallInterface() {
             component="button"
             className="call-button"
             onClick={handleCall}
-            disabled={!isReady || !phoneNumber || deviceStatus !== 'ready'}
+            disabled={!isReady || !isValidNumber || deviceStatus !== 'ready'}
             w={64}
             h={64}
             align="center"
@@ -152,11 +182,11 @@ export function CallInterface() {
             style={{
               borderRadius: '50%',
               cursor:
-                isReady && phoneNumber && deviceStatus === 'ready'
+                isReady && isValidNumber && deviceStatus === 'ready'
                   ? 'pointer'
                   : 'not-allowed',
               opacity:
-                isReady && phoneNumber && deviceStatus === 'ready' ? 1 : 0.5,
+                isReady && isValidNumber && deviceStatus === 'ready' ? 1 : 0.5,
             }}
           >
             <IconPhone size={28} color="white" fill="white" />
