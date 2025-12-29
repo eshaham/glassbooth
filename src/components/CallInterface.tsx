@@ -9,6 +9,7 @@ import {
 } from 'libphonenumber-js';
 import { useCallback, useMemo, useState } from 'react';
 
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useTwilioDevice } from '@/hooks/useTwilioDevice';
 
 import { Country, CountrySelector, defaultCountry } from './CountrySelector';
@@ -16,8 +17,8 @@ import { Dialer } from './Dialer';
 
 export function CallInterface() {
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [selectedCountry, setSelectedCountry] =
-    useState<Country>(defaultCountry);
+  const [selectedCountry, setSelectedCountry, isCountryHydrated] =
+    useLocalStorage<Country>('selectedCountry', defaultCountry);
   const {
     callStatus,
     deviceStatus,
@@ -120,7 +121,7 @@ export function CallInterface() {
       )}
 
       <Flex mih={60} align="center" justify="center" mb={24} pos="relative">
-        <Flex align="center">
+        <Flex align="center" opacity={isCountryHydrated ? 1 : 0}>
           <CountrySelector
             value={selectedCountry}
             onChange={setSelectedCountry}
