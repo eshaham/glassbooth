@@ -8,7 +8,7 @@ import {
   isValidPhoneNumber,
   validatePhoneNumberLength,
 } from 'libphonenumber-js';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useTwilioDevice } from '@/hooks/useTwilioDevice';
@@ -20,6 +20,7 @@ export function CallInterface() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [selectedCountry, setSelectedCountry, isCountryHydrated] =
     useLocalStorage<Country>('selectedCountry', defaultCountry);
+  const inputRef = useRef<HTMLInputElement>(null);
   const {
     callStatus,
     deviceStatus,
@@ -49,6 +50,40 @@ export function CallInterface() {
     },
     [selectedCountry],
   );
+
+  const isInCall = callStatus === 'connecting' || callStatus === 'connected';
+
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (isInCall) return;
+      if (e.target instanceof HTMLInputElement) return;
+
+      if (/^[0-9]$/.test(e.key)) {
+        e.preventDefault();
+        inputRef.current?.focus();
+        setPhoneNumber((prev) => {
+          const newValue = prev + e.key;
+          const fullNumber = '+' + selectedCountry.dialCode + newValue;
+          if (
+            validatePhoneNumberLength(
+              fullNumber,
+              selectedCountry.code as CountryCode,
+            ) === 'TOO_LONG'
+          ) {
+            return prev;
+          }
+          return newValue;
+        });
+      } else if (e.key === 'Backspace') {
+        e.preventDefault();
+        inputRef.current?.focus();
+        setPhoneNumber((prev) => prev.slice(0, -1));
+      }
+    };
+
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [isInCall, selectedCountry]);
 
   const handleCall = () => {
     if (isValidNumber) {
@@ -88,8 +123,6 @@ export function CallInterface() {
       setPhoneNumber(newDigits);
     }
   };
-
-  const isInCall = callStatus === 'connecting' || callStatus === 'connected';
 
   const getStatusText = () => {
     if (deviceStatus === 'disconnected') return 'Reconnecting...';
@@ -142,6 +175,7 @@ export function CallInterface() {
             disabled={isInCall}
           />
           <Box
+            ref={inputRef}
             component="input"
             type="tel"
             inputMode="tel"
