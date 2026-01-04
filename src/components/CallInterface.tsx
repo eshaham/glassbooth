@@ -10,9 +10,11 @@ import {
 } from 'libphonenumber-js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import { useCallPricing } from '@/hooks/useCallPricing';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useTwilioDevice } from '@/hooks/useTwilioDevice';
 
+import { CallCostDisplay } from './CallCostDisplay';
 import { Country, CountrySelector, defaultCountry } from './CountrySelector';
 import { Dialer } from './Dialer';
 
@@ -23,6 +25,7 @@ export function CallInterface() {
   const inputRef = useRef<HTMLInputElement>(null);
   const {
     callStatus,
+    callSid,
     deviceStatus,
     isReady,
     error,
@@ -31,11 +34,20 @@ export function CallInterface() {
     sendDigit,
   } = useTwilioDevice();
 
+  const fullNumber = '+' + selectedCountry.dialCode + phoneNumber;
+
   const isValidNumber = useMemo(() => {
     if (!phoneNumber) return false;
-    const fullNumber = '+' + selectedCountry.dialCode + phoneNumber;
-    return isValidPhoneNumber(fullNumber, selectedCountry.code as CountryCode);
+    const number = '+' + selectedCountry.dialCode + phoneNumber;
+    return isValidPhoneNumber(number, selectedCountry.code as CountryCode);
   }, [phoneNumber, selectedCountry]);
+
+  const pricing = useCallPricing({
+    countryCode: selectedCountry.code,
+    phoneNumber: isValidNumber ? fullNumber : null,
+    callStatus,
+    callSid,
+  });
 
   const isTooLong = useCallback(
     (value: string) => {
@@ -259,6 +271,7 @@ export function CallInterface() {
       <Text ta="center" mt={24} c="var(--text-secondary)" fz="0.875rem">
         Status: {getStatusText()}
       </Text>
+      <CallCostDisplay {...pricing} callStatus={callStatus} />
     </Box>
   );
 }

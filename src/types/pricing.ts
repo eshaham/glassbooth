@@ -1,0 +1,22 @@
+export interface CountryPricing {
+  country: string;
+  isoCountry: string;
+  minPrice: string | null;
+  maxPrice: string | null;
+  priceUnit: string;
+}
+
+export interface NumberPricing {
+  number: string;
+  country: string;
+  isoCountry: string;
+  currentPrice: string | null;
+  priceUnit: string;
+}
+
+export interface CallCostSummary {
+  callSid: string;
+  duration: number;
+  price: string | null;
+  priceUnit: string;
+}

@@ -1,0 +1,151 @@
+const TWILIO_API_KEY = process.env.TWILIO_API_KEY!;
+const TWILIO_API_SECRET = process.env.TWILIO_API_SECRET!;
+const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID!;
+
+const PRICING_BASE_URL = 'https://pricing.twilio.com/v1/Voice';
+const API_BASE_URL = 'https://api.twilio.com/2010-04-01';
+
+const CACHE_TTL_MS = 3600000;
+
+interface CountryPricingCache {
+  data: {
+    country: string;
+    isoCountry: string;
+    minPrice: string | null;
+    maxPrice: string | null;
+    priceUnit: string;
+  };
+  expires: number;
+}
+
+const countryPricingCache = new Map<string, CountryPricingCache>();
+
+function getAuthHeader() {
+  const auth = Buffer.from(`${TWILIO_API_KEY}:${TWILIO_API_SECRET}`).toString(
+    'base64',
+  );
+  return `Basic ${auth}`;
+}
+
+function getAccountAuthHeader() {
+  const auth = Buffer.from(
+    `${TWILIO_ACCOUNT_SID}:${TWILIO_API_SECRET}`,
+  ).toString('base64');
+  return `Basic ${auth}`;
+}
+
+export async function getCountryPricingDebug(countryCode: string) {
+  const response = await fetch(`${PRICING_BASE_URL}/Countries/${countryCode}`, {
+    headers: { Authorization: getAuthHeader() },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch pricing: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function getCountryPricing(countryCode: string) {
+  const cached = countryPricingCache.get(countryCode);
+  if (cached && cached.expires > Date.now()) {
+    return cached.data;
+  }
+
+  const response = await fetch(`${PRICING_BASE_URL}/Countries/${countryCode}`, {
+    headers: { Authorization: getAuthHeader() },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch pricing: ${response.status}`);
+  }
+
+  const twilioData = await response.json();
+
+  const relevantPrices = (twilioData.outbound_prefix_prices || [])
+    .filter((p: { friendly_name: string }) => {
+      const name = p.friendly_name.toLowerCase();
+
+      const isExcluded =
+        name.includes('premium') ||
+        name.includes('shared cost') ||
+        name.includes('special') ||
+        name.includes('region') ||
+        name.includes('toll free') ||
+        name.includes('alaska') ||
+        name.includes('hawaii') ||
+        name.includes('puerto') ||
+        name.includes('virgin') ||
+        name.includes('guam') ||
+        name.includes('samoa');
+
+      return !isExcluded;
+    })
+    .map((p: { current_price: string }) => parseFloat(p.current_price))
+    .filter((p: number) => !isNaN(p) && p > 0);
+
+  const minPrice =
+    relevantPrices.length > 0 ? Math.min(...relevantPrices) : null;
+  const maxPrice =
+    relevantPrices.length > 0 ? Math.max(...relevantPrices) : null;
+
+  const data = {
+    country: twilioData.country,
+    isoCountry: twilioData.iso_country,
+    minPrice: minPrice !== null ? minPrice.toString() : null,
+    maxPrice: maxPrice !== null ? maxPrice.toString() : null,
+    priceUnit: twilioData.price_unit,
+  };
+
+  countryPricingCache.set(countryCode, {
+    data,
+    expires: Date.now() + CACHE_TTL_MS,
+  });
+
+  return data;
+}
+
+export async function getNumberPricing(phoneNumber: string) {
+  const response = await fetch(
+    `${PRICING_BASE_URL}/Numbers/${encodeURIComponent(phoneNumber)}`,
+    {
+      headers: { Authorization: getAuthHeader() },
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch number pricing: ${response.status}`);
+  }
+
+  const twilioData = await response.json();
+
+  return {
+    number: twilioData.number,
+    country: twilioData.country,
+    isoCountry: twilioData.iso_country,
+    currentPrice: twilioData.outbound_call_price?.current_price || null,
+    priceUnit: twilioData.price_unit,
+  };
+}
+
+export async function getCallDetails(callSid: string) {
+  const response = await fetch(
+    `${API_BASE_URL}/Accounts/${TWILIO_ACCOUNT_SID}/Calls/${callSid}.json`,
+    {
+      headers: { Authorization: getAccountAuthHeader() },
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch call details: ${response.status}`);
+  }
+
+  const twilioData = await response.json();
+
+  return {
+    callSid: twilioData.sid,
+    duration: parseInt(twilioData.duration, 10),
+    price: twilioData.price,
+    priceUnit: twilioData.price_unit,
+  };
+}

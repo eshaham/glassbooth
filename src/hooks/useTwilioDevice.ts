@@ -21,6 +21,7 @@ export function useTwilioDevice() {
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [callStatus, setCallStatus] = useState<CallStatus>('idle');
   const [activeCall, setActiveCall] = useState<Call | null>(null);
+  const [callSid, setCallSid] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isReady, setIsReady] = useState(false);
   const [deviceStatus, setDeviceStatus] = useState<DeviceStatus>('connecting');
@@ -135,7 +136,10 @@ export function useTwilioDevice() {
         params: { To: phoneNumber },
       });
 
-      call.on('accept', () => setCallStatus('connected'));
+      call.on('accept', () => {
+        setCallStatus('connected');
+        setCallSid(call.parameters?.CallSid || null);
+      });
       call.on('disconnect', () => {
         setCallStatus('disconnected');
         setActiveCall(null);
@@ -154,6 +158,7 @@ export function useTwilioDevice() {
     activeCall?.disconnect();
     setActiveCall(null);
     setCallStatus('idle');
+    setCallSid(null);
   }, [activeCall]);
 
   const sendDigit = useCallback(
@@ -165,6 +170,7 @@ export function useTwilioDevice() {
 
   return {
     callStatus,
+    callSid,
     deviceStatus,
     isReady,
     error,
