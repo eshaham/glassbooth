@@ -38,39 +38,68 @@ export function useCallPricing({
   const callStartTimeRef = useRef<number | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const fetchCountryPricing = useCallback(async (code: string) => {
-    setIsCountryLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(`/api/pricing/country/${code}`);
-      if (!response.ok) throw new Error('Failed to fetch');
-      const data = await response.json();
-      setCountryPricing(data);
-    } catch {
-      setError('Rate unavailable');
-      setCountryPricing(null);
-    } finally {
-      setIsCountryLoading(false);
-    }
-  }, []);
+  useEffect(() => {
+    const controller = new AbortController();
 
-  const fetchNumberPricing = useCallback(async (number: string) => {
-    setIsNumberLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(
-        `/api/pricing/number/${encodeURIComponent(number)}`,
-      );
-      if (!response.ok) throw new Error('Failed to fetch');
-      const data = await response.json();
-      setNumberPricing(data);
-    } catch {
-      setError('Rate unavailable');
-      setNumberPricing(null);
-    } finally {
-      setIsNumberLoading(false);
+    async function fetchCountryPricing() {
+      setIsCountryLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(`/api/pricing/country/${countryCode}`, {
+          signal: controller.signal,
+        });
+        if (!response.ok) throw new Error('Failed to fetch');
+        const data = await response.json();
+        setCountryPricing(data);
+      } catch (e) {
+        if (e instanceof Error && e.name === 'AbortError') return;
+        setError('Rate unavailable');
+        setCountryPricing(null);
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsCountryLoading(false);
+        }
+      }
     }
-  }, []);
+
+    fetchCountryPricing();
+    return () => controller.abort();
+  }, [countryCode]);
+
+  useEffect(() => {
+    if (!phoneNumber) {
+      setNumberPricing(null);
+      return;
+    }
+
+    const controller = new AbortController();
+    const number = phoneNumber;
+
+    async function fetchNumberPricing() {
+      setIsNumberLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          `/api/pricing/number/${encodeURIComponent(number)}`,
+          { signal: controller.signal },
+        );
+        if (!response.ok) throw new Error('Failed to fetch');
+        const data = await response.json();
+        setNumberPricing(data);
+      } catch (e) {
+        if (e instanceof Error && e.name === 'AbortError') return;
+        setError('Rate unavailable');
+        setNumberPricing(null);
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsNumberLoading(false);
+        }
+      }
+    }
+
+    fetchNumberPricing();
+    return () => controller.abort();
+  }, [phoneNumber]);
 
   const fetchFinalCost = useCallback(async (sid: string) => {
     try {
@@ -82,18 +111,6 @@ export function useCallPricing({
       setFinalCost(null);
     }
   }, []);
-
-  useEffect(() => {
-    fetchCountryPricing(countryCode);
-  }, [countryCode, fetchCountryPricing]);
-
-  useEffect(() => {
-    if (phoneNumber) {
-      fetchNumberPricing(phoneNumber);
-    } else {
-      setNumberPricing(null);
-    }
-  }, [phoneNumber, fetchNumberPricing]);
 
   useEffect(() => {
     if (callStatus === 'connected') {
