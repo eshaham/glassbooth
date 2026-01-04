@@ -10,7 +10,7 @@ export interface NumberPricing {
   number: string;
   country: string;
   isoCountry: string;
-  currentPrice: string;
+  currentPrice: string | null;
   priceUnit: string;
 }
 
