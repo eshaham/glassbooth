@@ -34,6 +34,18 @@ function getAccountAuthHeader() {
   return `Basic ${auth}`;
 }
 
+export async function getCountryPricingDebug(countryCode: string) {
+  const response = await fetch(`${PRICING_BASE_URL}/Countries/${countryCode}`, {
+    headers: { Authorization: getAuthHeader() },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch pricing: ${response.status}`);
+  }
+
+  return response.json();
+}
+
 export async function getCountryPricing(countryCode: string) {
   const cached = countryPricingCache.get(countryCode);
   if (cached && cached.expires > Date.now()) {
@@ -53,7 +65,21 @@ export async function getCountryPricing(countryCode: string) {
   const relevantPrices = (twilioData.outbound_prefix_prices || [])
     .filter((p: { friendly_name: string }) => {
       const name = p.friendly_name.toLowerCase();
-      return name.includes('mobile') || name.includes('landline');
+
+      const isExcluded =
+        name.includes('premium') ||
+        name.includes('shared cost') ||
+        name.includes('special') ||
+        name.includes('region') ||
+        name.includes('toll free') ||
+        name.includes('alaska') ||
+        name.includes('hawaii') ||
+        name.includes('puerto') ||
+        name.includes('virgin') ||
+        name.includes('guam') ||
+        name.includes('samoa');
+
+      return !isExcluded;
     })
     .map((p: { current_price: string }) => parseFloat(p.current_price))
     .filter((p: number) => !isNaN(p) && p > 0);
