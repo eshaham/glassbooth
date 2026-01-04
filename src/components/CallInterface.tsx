@@ -38,8 +38,9 @@ export function CallInterface() {
 
   const isValidNumber = useMemo(() => {
     if (!phoneNumber) return false;
-    return isValidPhoneNumber(fullNumber, selectedCountry.code as CountryCode);
-  }, [phoneNumber, selectedCountry, fullNumber]);
+    const number = '+' + selectedCountry.dialCode + phoneNumber;
+    return isValidPhoneNumber(number, selectedCountry.code as CountryCode);
+  }, [phoneNumber, selectedCountry]);
 
   const pricing = useCallPricing({
     countryCode: selectedCountry.code,
