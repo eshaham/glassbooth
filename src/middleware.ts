@@ -8,13 +8,19 @@ export function middleware(request: NextRequest) {
   const isLoginPage = request.nextUrl.pathname === '/login';
   const isAuthApi = request.nextUrl.pathname === '/api/auth';
   const isTwilioWebhook = request.nextUrl.pathname.startsWith('/api/voice');
+  const isApiRoute = request.nextUrl.pathname.startsWith('/api/');
 
   if (isAuthApi || isTwilioWebhook) {
     return NextResponse.next();
   }
 
-  if (!isAuthenticated && !isLoginPage) {
-    return NextResponse.redirect(new URL('/login', request.url));
+  if (!isAuthenticated) {
+    if (isApiRoute) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    if (!isLoginPage) {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
   }
 
   if (isAuthenticated && isLoginPage) {
