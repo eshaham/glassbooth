@@ -31,14 +31,15 @@ export function useCallPricing({
   );
   const [callDuration, setCallDuration] = useState(0);
   const [finalCost, setFinalCost] = useState<CallCostSummary | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isCountryLoading, setIsCountryLoading] = useState(false);
+  const [isNumberLoading, setIsNumberLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const callStartTimeRef = useRef<number | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const fetchCountryPricing = useCallback(async (code: string) => {
-    setIsLoading(true);
+    setIsCountryLoading(true);
     setError(null);
     try {
       const response = await fetch(`/api/pricing/country/${code}`);
@@ -49,12 +50,12 @@ export function useCallPricing({
       setError('Rate unavailable');
       setCountryPricing(null);
     } finally {
-      setIsLoading(false);
+      setIsCountryLoading(false);
     }
   }, []);
 
   const fetchNumberPricing = useCallback(async (number: string) => {
-    setIsLoading(true);
+    setIsNumberLoading(true);
     setError(null);
     try {
       const response = await fetch(
@@ -67,7 +68,7 @@ export function useCallPricing({
       setError('Rate unavailable');
       setNumberPricing(null);
     } finally {
-      setIsLoading(false);
+      setIsNumberLoading(false);
     }
   }, []);
 
@@ -182,7 +183,7 @@ export function useCallPricing({
         }
       : null,
     priceUnit,
-    isLoading,
+    isLoading: isCountryLoading || isNumberLoading,
     error,
   };
 }
