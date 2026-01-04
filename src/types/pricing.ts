@@ -17,6 +17,6 @@ export interface NumberPricing {
 export interface CallCostSummary {
   callSid: string;
   duration: number;
-  price: string;
+  price: string | null;
   priceUnit: string;
 }
