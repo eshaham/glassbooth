@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { getCallDetails } from '@/lib/twilio-pricing';
 
-const CALL_SID_REGEX = /^CA[a-f0-9]{32}$/;
+const CALL_SID_REGEX = /^CA[a-f0-9]{32}$/i;
 
 export async function GET(
   _request: NextRequest,
