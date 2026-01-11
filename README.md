@@ -2,7 +2,7 @@
 
 A web-based VoIP dialer that lets you make phone calls directly from your browser using Twilio. Features real-time call pricing, international support for 250+ countries, and a modern glassmorphism UI.
 
-![GlassBooth interface showing the phone dialer with glassmorphism design](https://github.com/user-attachments/assets/7ac7d2e9-8709-44f8-ad03-21b57548353a)
+![GlassBooth interface showing the phone dialer with glassmorphism design](https://github.com/user-attachments/assets/524c466c-99fe-44b3-b75a-1fed424516f2)
 
 ## Features
 
