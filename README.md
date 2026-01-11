@@ -1,6 +1,10 @@
 # GlassBooth
 
-A web-based VoIP dialer that lets you make phone calls directly from your browser using Twilio. Features real-time call pricing, international support for 250+ countries, and a modern glassmorphism UI.
+A web-based VoIP dialer that lets you make phone calls directly from your browser using Twilio. No downloads, no apps, no configuration—just open your browser and start calling.
+
+GlassBooth combines powerful telephony capabilities with a beautiful, modern interface. See real-time call costs as you talk, dial any of 250+ countries with proper number formatting, and enjoy a smooth glassmorphism design that makes making calls feel effortless.
+
+Perfect for testing phone integrations, making quick international calls, or having a backup dialer that works anywhere you have a browser.
 
 ![GlassBooth interface showing the phone dialer with glassmorphism design](https://github.com/user-attachments/assets/524c466c-99fe-44b3-b75a-1fed424516f2)
 
