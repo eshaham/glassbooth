@@ -23,7 +23,7 @@ export default function RootLayout({
       <head>
         <ColorSchemeScript />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         <MantineProvider>{children}</MantineProvider>
       </body>
     </html>
