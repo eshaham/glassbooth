@@ -1,6 +1,6 @@
-# GlassBooth
+<img width="974" height="820" alt="image" src="https://github.com/user-attachments/assets/53b60152-d5d2-4157-b024-7a9294a69ca2" />
 
-![GlassBooth Logo](public/logo.png)
+# GlassBooth
 
 A web-based VoIP dialer that lets you make phone calls directly from your browser using Twilio. Features real-time call pricing, international support for 250+ countries, and a modern glassmorphism UI.
 
