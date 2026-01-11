@@ -1,4 +1,6 @@
-# Spyke
+# GlassBooth
+
+![GlassBooth Logo](public/logo.png)
 
 A web-based VoIP dialer that lets you make phone calls directly from your browser using Twilio. Features real-time call pricing, international support for 250+ countries, and a modern glassmorphism UI.
 
@@ -14,7 +16,7 @@ A web-based VoIP dialer that lets you make phone calls directly from your browse
 
 ## Prerequisites
 
-Before setting up Spyke, you'll need:
+Before setting up GlassBooth, you'll need:
 
 - **Node.js** 18.x or later
 - **npm** 9.x or later
@@ -60,7 +62,7 @@ You have two options:
 
 1. Go to **Account** → **API keys & tokens**
 2. Click **Create API Key**
-3. Give it a friendly name (e.g., "Spyke")
+3. Give it a friendly name (e.g., "GlassBooth")
 4. Select **Standard** key type
 5. Click **Create API Key**
 6. **Important**: Copy the **SID** and **Secret** immediately - the secret won't be shown again!
@@ -83,7 +85,7 @@ This is crucial for handling outbound calls. For local development, you'll first
 2. Copy the HTTPS URL from ngrok (e.g., `https://abc123.ngrok.io`)
 3. Go to **Voice** → **Manage** → **TwiML Apps** in the Twilio Console
 4. Click **Create new TwiML App**
-5. Give it a name (e.g., "Spyke Dialer")
+5. Give it a name (e.g., "GlassBooth Dialer")
 6. For **Voice Configuration**:
    - **Request URL**: `https://your-ngrok-url.ngrok.io/api/voice`
    - **Request Method**: `POST`
@@ -95,8 +97,8 @@ This is crucial for handling outbound calls. For local development, you'll first
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/spyke.git
-cd spyke
+git clone https://github.com/yourusername/glassbooth.git
+cd glassbooth
 ```
 
 ### 2. Install Dependencies
@@ -193,7 +195,7 @@ npm run typecheck    # Run TypeScript type checking
 
 ### Other Platforms
 
-Spyke can be deployed to any platform that supports Node.js:
+GlassBooth can be deployed to any platform that supports Node.js:
 
 - AWS (Amplify, EC2, Lambda)
 - Google Cloud (Cloud Run, App Engine)
